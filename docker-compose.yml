@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  proxy:
+    container_name: proxy
+    image: "wearedocker/proxy"
+    networks:
+      public:
+        ipv4_address: 192.168.100.80
+      private:
+        ipv4_address: 192.168.101.80
+    volumes:
+      - ./nginx.conf:/etc/nignx/nginx.conf
+  web1:
+    container_name: web1
+    image: "wearedocker/nginx:web1"
+    networks:
+      private:
+        ipv4_address: 192.168.101.128
+    depends_on:
+      - proxy
+  web2:
+    container_name: web2
+    image: "wearedocker/nginx:web2"
+    networks:
+      private:
+        ipv4_address: 192.168.101.129
+    depends_on:
+      - proxy
+networks:
+  public:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.100.0/24
+  private:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 192.168.101.0/24
